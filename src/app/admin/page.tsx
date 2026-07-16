@@ -23,6 +23,7 @@ export default function AdminPage() {
   const [showNew, setShowNew] = useState(false);
   const [newKey, setNewKey] = useState<{ name: string; quota: number; days: number }>({ name: "", quota: 25000000, days: 30 });
   const [newKeyResult, setNewKeyResult] = useState<string | null>(null);
+  const [revealedKeys, setRevealedKeys] = useState<Set<string>>(new Set());
   const [editKey, setEditKey] = useState<AdminKey | null>(null);
   const [activeTab, setActiveTab] = useState<"keys" | "pricing" | "models">("keys");
   const [pricing, setPricing] = useState([
@@ -218,7 +219,24 @@ export default function AdminPage() {
                           <span className="font-medium">{k.name}</span>
                           {k.role === "admin" && <span className="ml-1 text-xs bg-teal-400/20 text-teal-400 px-1.5 py-0.5 rounded">admin</span>}
                         </td>
-                        <td className="px-4 py-3 font-mono text-xs">{k.key}</td>
+                        <td className="px-4 py-3 font-mono text-xs">
+                          {revealedKeys.has(k._full) ? (
+                            <span className="text-teal-400">{k._full}</span>
+                          ) : (
+                            <span>{k.key}</span>
+                          )}
+                          <button
+                            onClick={() => {
+                              const next = new Set(revealedKeys);
+                              if (next.has(k._full)) next.delete(k._full);
+                              else next.add(k._full);
+                              setRevealedKeys(next);
+                            }}
+                            className="ml-2 text-teal-400 hover:underline text-xs"
+                          >
+                            {revealedKeys.has(k._full) ? "Sembunyikan" : "Lihat"}
+                          </button>
+                        </td>
                         <td className="px-4 py-3">
                           <select
                             value={k.status}
