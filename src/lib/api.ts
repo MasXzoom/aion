@@ -1,112 +1,92 @@
-// API middleware — proxies to gateway backend
-// ponytail: single gateway URL, config per env if needed
+// Aion API layer — proxies to gateway internal API
+// Gateway must be running on the same host (or set GATEWAY_URL)
 
 const GATEWAY_URL = process.env.GATEWAY_URL || "http://localhost:8000";
-const ADMIN_KEY = process.env.ADMIN_KEY || "sk-admin-master";
+const INTERNAL_SECRET = process.env.INTERNAL_SECRET || "";
 
-interface KeyInfo {
+async function gw(path: string, options: RequestInit = {}): Promise<any> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(options.headers as Record<string, string> || {}),
+  };
+  if (INTERNAL_SECRET) {
+    headers["Authorization"] = `Bearer ${INTERNAL_SECRET}`;
+  }
+  const res = await fetch(`${GATEWAY_URL}${path}`, { ...options, headers });
+  return res.json();
+}
+
+export interface KeyInfo {
   key: string;
   name: string;
   status: string;
   remain_quota: number;
   total_quota: number;
-  unlimited_quota: boolean;
+  unlimited_quota: boolean | number;
   expired_time: number;
   created_at: string;
   last_used: string | null;
-  role: "user" | "admin";
+  role: string;
+  rate_limit_rpm?: number;
+  rate_limit_rpd?: number;
 }
 
-// In-memory + JSON file store for keys (synced with gateway)
-// ponytail: use SQLite or Redis if >1000 keys
-import fs from "fs";
-import path from "path";
-
-const DATA_DIR = path.join(process.cwd(), "data");
-const KEYS_FILE = path.join(DATA_DIR, "keys.json");
-
-function ensureDataDir() {
-  if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+export async function loginWithKey(api_key: string) {
+  return gw("/internal/login", {
+    method: "POST",
+    body: JSON.stringify({ api_key }),
+  });
 }
 
-function loadKeys(): Record<string, KeyInfo> {
-  ensureDataDir();
-  if (!fs.existsSync(KEYS_FILE)) return {};
-  return JSON.parse(fs.readFileSync(KEYS_FILE, "utf-8"));
+export async function getMe(api_key: string) {
+  return gw("/internal/me", {
+    headers: { Authorization: `Bearer ${api_key}` },
+  });
 }
 
-function saveKeys(keys: Record<string, KeyInfo>) {
-  ensureDataDir();
-  fs.writeFileSync(KEYS_FILE, JSON.stringify(keys, null, 2));
+export async function getUsageLogs(api_key: string) {
+  return gw("/internal/me/logs", {
+    headers: { Authorization: `Bearer ${api_key}` },
+  });
 }
 
-// Seed default admin key if empty
-function seedKeys() {
-  const keys = loadKeys();
-  if (Object.keys(keys).length === 0) {
-    keys[ADMIN_KEY] = {
-      key: ADMIN_KEY,
-      name: "Admin Master",
-      status: "active",
-      remain_quota: 999999999,
-      total_quota: 999999999,
-      unlimited_quota: true,
-      expired_time: -1,
-      created_at: new Date().toISOString(),
-      last_used: null,
-      role: "admin",
-    };
-    saveKeys(keys);
-  }
-  return keys;
+// Admin: requires admin JWT cookie or internal secret
+export async function getAllKeys(adminKey: string) {
+  return gw("/internal/keys", {
+    headers: { Authorization: `Bearer ${adminKey}` },
+  });
 }
 
-export function getKeyInfo(apiKey: string): KeyInfo | null {
-  const keys = seedKeys();
-  return keys[apiKey] || null;
+export async function createKey(adminKey: string, info: { name: string; quota: number; days: number; unlimited_quota?: boolean }) {
+  return gw("/internal/keys", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${adminKey}` },
+    body: JSON.stringify({
+      name: info.name,
+      quota: info.quota,
+      unlimited_quota: info.unlimited_quota || false,
+      expired_time: Math.floor(Date.now() / 1000) + info.days * 86400,
+    }),
+  });
 }
 
-export function getAllKeys(): KeyInfo[] {
-  const keys = seedKeys();
-  return Object.values(keys);
+export async function updateKey(adminKey: string, fullKey: string, updates: Record<string, any>) {
+  return gw(`/internal/keys/${encodeURIComponent(fullKey)}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${adminKey}` },
+    body: JSON.stringify(updates),
+  });
 }
 
-export function createKey(info: KeyInfo): KeyInfo {
-  const keys = seedKeys();
-  keys[info.key] = info;
-  saveKeys(keys);
-  return info;
+export async function deleteKey(adminKey: string, fullKey: string) {
+  return gw(`/internal/keys/${encodeURIComponent(fullKey)}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${adminKey}` },
+  });
 }
 
-export function updateKey(apiKey: string, updates: Partial<KeyInfo>): KeyInfo | null {
-  const keys = seedKeys();
-  if (!keys[apiKey]) return null;
-  keys[apiKey] = { ...keys[apiKey], ...updates };
-  saveKeys(keys);
-  return keys[apiKey];
+export async function getModels() {
+  return gw("/internal/models");
 }
 
-export function deleteKey(apiKey: string): boolean {
-  const keys = seedKeys();
-  if (!keys[apiKey]) return false;
-  delete keys[apiKey];
-  saveKeys(keys);
-  return true;
-}
-
-export function getUsageLogs(apiKey: string): any[] {
-  // ponytail: real usage logs from gateway DB. Stub for now.
-  const logsFile = path.join(DATA_DIR, `usage_${apiKey.replace(/[^a-zA-Z0-9]/g, "_")}.json`);
-  if (!fs.existsSync(logsFile)) return [];
-  return JSON.parse(fs.readFileSync(logsFile, "utf-8"));
-}
-
-export function logUsage(apiKey: string, entry: any) {
-  const logsFile = path.join(DATA_DIR, `usage_${apiKey.replace(/[^a-zA-Z0-9]/g, "_")}.json`);
-  const logs = getUsageLogs(apiKey);
-  logs.unshift({ ...entry, timestamp: new Date().toISOString() });
-  // Keep last 500
-  fs.writeFileSync(logsFile, JSON.stringify(logs.slice(0, 500), null, 2));
-}
-
-export { GATEWAY_URL, ADMIN_KEY };
+export { GATEWAY_URL };
