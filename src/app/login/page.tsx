@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem("nexa_api_key");
+    const stored = localStorage.getItem("aion_api_key");
     if (stored) {
       fetch("/api/me", { headers: { Authorization: `Bearer ${stored}` } })
         .then(r => r.ok && router.push("/dashboard"))
@@ -30,7 +30,7 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Key tidak valid");
-      localStorage.setItem("nexa_api_key", key.trim());
+      localStorage.setItem("aion_api_key", key.trim());
       router.push(data.role === "admin" ? "/admin" : "/dashboard");
     } catch (err: any) {
       setError(err.message);
@@ -46,7 +46,7 @@ export default function LoginPage() {
           <Link href="/" className="inline-block">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-400 to-cyan-300 flex items-center justify-center text-sm font-bold text-background mx-auto mb-4">N</div>
           </Link>
-          <h1 className="text-2xl font-bold">Masuk ke nexa<span className="text-teal-400">/api</span></h1>
+          <h1 className="text-2xl font-bold">Masuk ke aion</h1>
           <p className="text-sm text-muted-foreground mt-2">Gunakan API key yang sudah dibeli</p>
         </div>
         <div className="bg-card border border-border rounded-xl p-6">

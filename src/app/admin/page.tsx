@@ -31,7 +31,7 @@ export default function AdminPage() {
     { name: "Enterprise", price: 500000, quota: 500000000, days: 90 },
   ]);
 
-  const apiKey = typeof window !== "undefined" ? localStorage.getItem("nexa_api_key") : null;
+  const apiKey = typeof window !== "undefined" ? localStorage.getItem("aion_api_key") : null;
 
   const fetchKeys = useCallback(async () => {
     if (!apiKey) { router.push("/login"); return; }
@@ -89,7 +89,7 @@ export default function AdminPage() {
     fetchKeys();
   };
 
-  const logout = () => { localStorage.removeItem("nexa_api_key"); router.push("/login"); };
+  const logout = () => { localStorage.removeItem("aion_api_key"); router.push("/login"); };
 
   const formatQuota = (n: number) => n >= 1e9 ? `${(n/1e9).toFixed(1)}B` : n >= 1e6 ? `${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `${(n/1e3).toFixed(1)}K` : String(n);
   const formatRupiah = (n: number) => `Rp${n.toLocaleString("id-ID")}`;
@@ -108,7 +108,7 @@ export default function AdminPage() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-cyan-300 flex items-center justify-center text-sm font-bold text-background">N</div>
-            <span className="font-bold text-lg">nexa<span className="text-teal-400">/api</span> <span className="text-xs bg-teal-400/20 text-teal-400 px-2 py-0.5 rounded ml-1">Admin</span></span>
+            <span className="font-bold text-lg">aion <span className="text-xs bg-teal-400/20 text-teal-400 px-2 py-0.5 rounded ml-1">Admin</span></span>
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <Link href="/dashboard" className="text-muted-foreground hover:text-foreground">User View</Link>
@@ -354,7 +354,7 @@ export default function AdminPage() {
                 "big-pickle", "hy3", "gemini-3.5", "gemini-3-flash",
               ].map(m => (
                 <div key={m} className="bg-card border border-border rounded-xl p-4 flex items-center justify-between">
-                  <code className="text-xs font-mono text-teal-400">nexa/{m}</code>
+                  <code className="text-xs font-mono text-teal-400">aion/{m}</code>
                   <span className="w-2 h-2 rounded-full bg-teal-400" />
                 </div>
               ))}

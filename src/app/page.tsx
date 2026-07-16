@@ -8,7 +8,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-cyan-300 flex items-center justify-center text-sm font-bold text-background">N</div>
-            <span className="font-bold text-lg">nexa<span className="text-teal-400">/api</span></span>
+            <span className="font-bold text-lg">aion</span>
           </div>
           <div className="flex items-center gap-4">
             <Link href="/login" className="text-sm text-muted-foreground hover:text-foreground transition">Masuk</Link>
@@ -43,7 +43,7 @@ export default function Home() {
         <div className="mt-12 max-w-xl mx-auto bg-card border border-border rounded-xl p-4 text-left">
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
             <span className="text-teal-400">➜</span> 
-            <span className="font-mono">~ curl https://api.nexa.my.id/v1</span>
+            <span className="font-mono">~ curl https://api.aion.my.id/v1</span>
           </div>
           <pre className="text-sm font-mono text-muted-foreground">
             <span className="text-teal-400">#</span> Ganti base URL, langsung jalan.
@@ -57,7 +57,7 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-8">
           {[
             { num: "01", title: "Beli key", desc: "Pilih paket, bayar QRIS. Key diterbitkan otomatis dan hanya ditampilkan satu kali." },
-            { num: "02", title: "Arahkan client ke /v1", desc: "Ganti base URL ke api.nexa.my.id/v1 di SDK OpenAI mana pun. Kode tetap jalan." },
+            { num: "02", title: "Arahkan client ke /v1", desc: "Ganti base URL ke api.aion.my.id/v1 di SDK OpenAI mana pun. Kode tetap jalan." },
             { num: "03", title: "Terukur & terkendali", desc: "Setiap panggilan otomatis mengurangi budget. Saat habis, akses berhenti." },
           ].map((s, i) => (
             <div key={i} className="bg-card border border-border rounded-xl p-6 relative">
@@ -80,7 +80,7 @@ export default function Home() {
             "kimi-k2.6", "kimi-k2.7-code", "mimo-v2.5-pro", "minimax-m3",
           ].map((m, i) => (
             <div key={i} className="bg-card border border-border rounded-lg px-4 py-3 text-sm font-mono text-muted-foreground hover:border-teal-400/30 transition">
-              <span className="text-teal-400">nexa/</span>{m}
+              <span className="text-teal-400">aion/</span>{m}
             </div>
           ))}
         </div>
@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        <p>nexa/api — © 2026</p>
+        <p>aion — © 2026</p>
       </footer>
     </div>
   );

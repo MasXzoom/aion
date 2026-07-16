@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Nexa API — Metered keys to every AI model",
+  title: "Aion — Metered keys to every AI model",
   description: "Satu endpoint, budget dalam kendali penuh. QRIS, API key instan, akses ke 20+ model AI.",
 };
 

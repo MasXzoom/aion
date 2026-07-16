@@ -7,7 +7,7 @@ export default function PricingPage() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-cyan-300 flex items-center justify-center text-sm font-bold text-background">N</div>
-            <span className="font-bold text-lg">nexa<span className="text-teal-400">/api</span></span>
+            <span className="font-bold text-lg">aion</span>
           </Link>
           <Link href="/login" className="text-sm bg-primary text-primary-foreground px-4 py-2 rounded-lg hover:opacity-90 transition font-medium">Masuk</Link>
         </div>

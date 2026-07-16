@@ -30,7 +30,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<"overview" | "logs" | "models" | "docs">("overview");
 
-  const apiKey = typeof window !== "undefined" ? localStorage.getItem("nexa_api_key") : null;
+  const apiKey = typeof window !== "undefined" ? localStorage.getItem("aion_api_key") : null;
 
   const fetchData = useCallback(async () => {
     if (!apiKey) { router.push("/login"); return; }
@@ -39,7 +39,7 @@ export default function DashboardPage() {
         fetch("/api/me", { headers: { Authorization: `Bearer ${apiKey}` } }),
         fetch("/api/me/logs", { headers: { Authorization: `Bearer ${apiKey}` } }),
       ]);
-      if (!meRes.ok) { localStorage.removeItem("nexa_api_key"); router.push("/login"); return; }
+      if (!meRes.ok) { localStorage.removeItem("aion_api_key"); router.push("/login"); return; }
       setInfo(await meRes.json());
       if (logsRes.ok) setLogs((await logsRes.json()).logs || []);
     } catch { /* ignore */ }
@@ -48,7 +48,7 @@ export default function DashboardPage() {
 
   useEffect(() => { fetchData(); }, [fetchData]);
 
-  const logout = () => { localStorage.removeItem("nexa_api_key"); router.push("/login"); };
+  const logout = () => { localStorage.removeItem("aion_api_key"); router.push("/login"); };
 
   const formatQuota = (n: number) => n >= 1e9 ? `${(n/1e9).toFixed(1)}B` : n >= 1e6 ? `${(n/1e6).toFixed(1)}M` : n >= 1e3 ? `${(n/1e3).toFixed(1)}K` : String(n);
 
@@ -85,7 +85,7 @@ export default function DashboardPage() {
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-teal-400 to-cyan-300 flex items-center justify-center text-sm font-bold text-background">N</div>
-            <span className="font-bold text-lg">nexa<span className="text-teal-400">/api</span></span>
+            <span className="font-bold text-lg">aion</span>
           </Link>
           <div className="flex items-center gap-4 text-sm">
             <span className="text-muted-foreground">{info?.name || "User"}</span>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                     <h3 className="font-semibold text-sm">{m.name}</h3>
                     <span className="text-xs text-muted-foreground bg-secondary px-2 py-0.5 rounded">{m.ctx}</span>
                   </div>
-                  <code className="text-xs text-teal-400 font-mono">nexa/{m.id}</code>
+                  <code className="text-xs text-teal-400 font-mono">aion/{m.id}</code>
                 </div>
               ))}
             </div>
@@ -217,7 +217,7 @@ export default function DashboardPage() {
             <div>
               <h2 className="font-semibold mb-2">Base URL</h2>
               <div className="bg-card border border-border rounded-xl p-4">
-                <code className="text-sm text-teal-400 font-mono">https://api.nexa.my.id/v1</code>
+                <code className="text-sm text-teal-400 font-mono">https://api.aion.my.id/v1</code>
               </div>
             </div>
             <div>
@@ -238,7 +238,7 @@ export default function DashboardPage() {
 Content-Type: application/json
 
 {
-  "model": "nexa/deepseek-v4-flash",
+  "model": "aion/deepseek-v4-flash",
   "messages": [
     {"role": "user", "content": "Halo!"}
   ],
@@ -251,10 +251,10 @@ Content-Type: application/json
               <h2 className="font-semibold mb-2">cURL Example</h2>
               <div className="bg-card border border-border rounded-xl p-4">
                 <pre className="bg-secondary rounded-lg p-3 text-xs font-mono overflow-x-auto">
-{`curl https://api.nexa.my.id/v1/chat/completions \\
+{`curl https://api.aion.my.id/v1/chat/completions \\
   -H "Content-Type: application/json" \\
   -H "Authorization: Bearer sk-nx-YOUR_KEY" \\
-  -d '{"model":"nexa/deepseek-v4-flash","messages":[{"role":"user","content":"Halo!"}]}'`}
+  -d '{"model":"aion/deepseek-v4-flash","messages":[{"role":"user","content":"Halo!"}]}'`}
                 </pre>
               </div>
             </div>
@@ -265,12 +265,12 @@ Content-Type: application/json
 {`from openai import OpenAI
 
 client = OpenAI(
-    base_url="https://api.nexa.my.id/v1",
+    base_url="https://api.aion.my.id/v1",
     api_key="sk-nx-YOUR_KEY"
 )
 
 response = client.chat.completions.create(
-    model="nexa/deepseek-v4-flash",
+    model="aion/deepseek-v4-flash",
     messages=[{"role": "user", "content": "Halo!"}]
 )
 print(response.choices[0].message.content)`}
@@ -279,11 +279,11 @@ print(response.choices[0].message.content)`}
             </div>
             <div>
               <h2 className="font-semibold mb-2">Model List</h2>
-              <p className="text-sm text-muted-foreground mb-2">Gunakan prefix <code className="text-teal-400 text-xs">nexa/</code> di depan model ID:</p>
+              <p className="text-sm text-muted-foreground mb-2">Gunakan prefix <code className="text-teal-400 text-xs">aion/</code> di depan model ID:</p>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                 {models.map(m => (
                   <code key={m.id} className="bg-card border border-border rounded-lg px-3 py-2 text-xs font-mono text-muted-foreground">
-                    <span className="text-teal-400">nexa/</span>{m.id}
+                    <span className="text-teal-400">aion/</span>{m.id}
                   </code>
                 ))}
               </div>
